@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TableFlow</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 60px 20px;
+            background: #f8f5f0;
+        }
+        a {
+            display: block;
+            margin: 20px auto;
+            padding: 15px;
+            max-width: 250px;
+            background: #344e41;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to TableFlow</h1>
+    <p>Digital Restaurant Ordering System</p>
+
+    <a href="menu.html">Customer Menu</a>
+    <a href="doc.html">Staff Dashboard</a>
+</body>
+</html>
