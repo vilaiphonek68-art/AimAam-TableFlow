@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Order Manager</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon">🍽️</div>
+                <div>
+                    <h2>Aim Aam</h2>
+                    <p>RESTAURANT </p>
+                </div>
+            </div>
+            <div class="side-label">WORKSPACE</div>
+            <a href="doc.html" class="nav-item active">
+                ▦ &nbsp; Order Dashboard
+            </a>
+            <a href="menu-data.js" class="nav-item">
+               &nbsp; Food menu
+            </a>
+            <div class="sidebar-note">
+                <span>✦</span>
+                <h3>Service made simple</h3>
+                <p>Manage table orders and track kitchen progress easily.</p>
+            </div>
+            <div class="sidebar-footer">
+                <span class="status-dot"></span>
+                Local workspace
+                <small>Saved in this browser</small>
+            </div>
+        </aside>
+        <main class="main-content">
+            <header class="topbar">
+                <div>
+                    <p class="eyebrow">RESTAURANT OPERATIONS</p>
+                    <h1>Order Dashboard</h1>
+                    <p class="subtitle">
+                        Manage table orders and track kitchen progress.
+                    </p>
+                </div>
+                <button class="primary-btn" id="addOrderBtn" type="button">
+                    + New Order
+                </button>
+            </header>
+            <section class="stats-grid">
+                <article class="stat-card">
+                    <span>Total Orders</span>
+                    <h2 id="totalCount">0</h2>
+                    <p>Orders in the system</p>
+                </article>
+                <article class="stat-card">
+                    <span>Pending</span>
+                    <h2 id="pendingCount">0</h2>
+                    <p>Waiting to be prepared</p>
+                </article>
+                <article class="stat-card">
+                    <span>Preparing</span>
+                    <h2 id="preparingCount">0</h2>
+                    <p>Currently in the kitchen</p>
+                </article>
+                <article class="stat-card">
+                    <span>Completed</span>
+                    <h2 id="completedCount">0</h2>
+                    <p>Ready or served</p>
+                </article>
+            </section>
+            <section class="orders-panel">
+                <div class="panel-heading">
+                    <div>
+                        <h2>Table Orders</h2>
+                        <p>Each order can include multiple food items.</p>
+                    </div>
+                    <div class="panel-tools">
+                        <input
+                            id="searchInput"
+                            type="search"
+                            placeholder="Search table or food..."
+                            aria-label="Search orders"
+                        >
+                        <select id="statusFilter" aria-label="Filter status">
+                            <option value="all">All Statuses</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Preparing">Preparing</option>
+                            <option value="Completed">Completed</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ORDER / TABLE</th>
+                                <th>FOOD ITEMS</th>
+                                <th>TOTAL</th>
+                                <th>STATUS</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersTableBody"></tbody>
+                    </table>
+                    <div class="empty-state" id="emptyState">
+                        <div class="empty-icon">🍜</div>
+                        <h3>No orders yet</h3>
+                        <p>Add your first table order to get started.</p>
+                        <button
+                            class="primary-btn"
+                            id="emptyAddBtn"
+                            type="button"
+                        >
+                            + Create First Order
+                        </button>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <span id="resultsText">Showing 0 orders</span>
+                    <span>Changes are saved automatically</span>
+                </div>
+            </section>
+            <footer class="page-footer">
+                TABLE & THYME · RESTAURANT ORDER TRACKER
+            </footer>
+        </main>
+    </div>
+    <!-- Add/Edit Order Modal -->
+    <div class="modal-backdrop hidden" id="orderModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div>
+                    <p class="eyebrow">ORDER DETAILS</p>
+                    <h2 id="modalTitle">Create New Order</h2>
+                </div>
+                <button
+                    class="close-btn"
+                    id="closeModalBtn"
+                    type="button"
+                    aria-label="Close"
+                >×</button>
+            </div>
+            <form id="orderForm">
+                <div class="form-row">
+                    <label for="tableNumber">Table Number *</label>
+                    <input
+                        id="tableNumber"
+                        type="number"
+                        min="1"
+                        max="999"
+                        placeholder="e.g. 4"
+                        required
+                    >
+                </div>
+                <div class="form-row">
+                    <label for="orderNote">Order Note (Optional)</label>
+                    <input
+                        id="orderNote"
+                        type="text"
+                        maxlength="140"
+                        placeholder="e.g. Less spicy, no onions"
+                    >
+                </div>
+                <div class="items-heading">
+                    <div>
+                        <h3>Food Items</h3>
+                        <p>Add multiple items to this order.</p>
+                    </div>
+                    <button
+                        class="secondary-btn"
+                        id="addItemBtn"
+                        type="button"
+                    >
+                        + Add Item
+                    </button>
+                </div>
+                <div id="itemsContainer"></div>
+                <div class="form-total">
+                    <span>Order Total</span>
+                    <strong id="formTotal">฿0.00</strong>
+                </div>
+                <div class="form-row">
+                    <label for="orderStatus">Order Status</label>
+                    <select id="orderStatus">
+                        <option value="Pending">Pending — Waiting</option>
+                        <option value="Preparing">Preparing — In Kitchen</option>
+                        <option value="Completed">Completed — Ready / Served</option>
+                    </select>
+                </div>
+                <p class="form-error" id="formError" role="alert"></p>
+                <div class="modal-actions">
+                    <button
+                        class="secondary-btn"
+                        id="cancelBtn"
+                        type="button"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        class="primary-btn"
+                        id="saveOrderBtn"
+                        type="submit"
+                    >
+                        Save Order
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="menu-data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
