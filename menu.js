@@ -159,7 +159,7 @@ async function confirmOrder() {
 
     try {
         const { error } = await window.tableFlowSupabase
-            .from("orders")
+            .from("order")
             .insert([newOrder]);
 
         if (error) {
