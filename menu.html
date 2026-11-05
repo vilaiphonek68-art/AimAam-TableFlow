@@ -323,43 +323,39 @@
     }
 }
     </style>
-    /* ===== HERO SECTION ===== */
+   /* ===== REFINED HERO DESIGN ===== */
 
 .customer-menu .menu-hero {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1.1fr 0.9fr;
     align-items: center;
     gap: 25px;
-    padding: 35px;
-    margin: 25px 0 40px;
+    min-height: 320px;
+    padding: 35px 40px;
+    margin: 20px 0 35px;
     background: #153D32;
     border-radius: 28px;
     overflow: hidden;
     color: white;
+    box-sizing: border-box;
 }
 
 .customer-menu .hero-content {
     position: relative;
-    z-index: 1;
+    z-index: 2;
 }
 
 .customer-menu .hero-label {
-    display: inline-block;
-    background: #B7F34A;
-    color: #153D32;
-    padding: 8px 13px;
-    border-radius: 30px;
     font-size: 11px;
+    letter-spacing: 1.5px;
     font-weight: 900;
-    letter-spacing: 1px;
 }
 
 .customer-menu .hero-content h2 {
-    color: white;
-    font-size: clamp(36px, 5vw, 58px);
+    font-size: clamp(38px, 4.5vw, 55px);
     line-height: 1.05;
-    letter-spacing: -2px;
-    margin: 22px 0 15px;
+    margin: 18px 0;
+    color: white;
 }
 
 .customer-menu .hero-content h2 span {
@@ -367,37 +363,32 @@
 }
 
 .customer-menu .hero-content p {
-    color: #d5e1d7;
-    line-height: 1.7;
-    max-width: 330px;
     font-size: 14px;
+    line-height: 1.7;
+    max-width: 300px;
+    color: #e0eadf;
 }
 
 .customer-menu .hero-button {
     display: inline-block;
-    margin-top: 15px;
-    padding: 13px 20px;
+    margin-top: 12px;
+    padding: 13px 22px;
     background: #B7F34A;
     color: #153D32;
     text-decoration: none;
     border-radius: 30px;
     font-weight: 900;
-    transition: 0.2s;
-}
-
-.customer-menu .hero-button:hover {
-    background: #E7F56A;
-    transform: translateY(-3px);
 }
 
 .customer-menu .hero-image {
     position: relative;
+    width: 100%;
     min-width: 0;
 }
 
 .customer-menu .hero-image img {
     width: 100%;
-    height: 270px;
+    height: 245px;
     object-fit: cover;
     border-radius: 22px;
     display: block;
@@ -406,31 +397,30 @@
 
 .customer-menu .hero-sticker {
     position: absolute;
-    right: -10px;
+    right: -5px;
     bottom: -12px;
     background: #E7F56A;
     color: #153D32;
-    padding: 12px 17px;
+    padding: 11px 15px;
     border-radius: 30px;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 900;
-    transform: rotate(-5deg);
 }
 
-/* Mobile Hero */
 @media (max-width: 760px) {
     .customer-menu .menu-hero {
         grid-template-columns: 1fr;
         padding: 25px;
-        gap: 25px;
+        gap: 20px;
+    }
+
+    .customer-menu .hero-content h2 {
+        font-size: 42px;
     }
 
     .customer-menu .hero-image img {
-        height: 210px;
-    }
-
-    .customer-menu .hero-sticker {
-        right: 0;
+        height: 190px;
+        transform: none;
     }
 }
 </head>
