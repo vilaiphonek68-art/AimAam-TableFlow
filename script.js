@@ -1,4 +1,3 @@
-const STORAGE_KEY = "restaurantOrders";
 const ordersTableBody = document.getElementById("ordersTableBody");
 const emptyState = document.getElementById("emptyState");
 const orderModal = document.getElementById("orderModal");
@@ -7,26 +6,71 @@ const itemsContainer = document.getElementById("itemsContainer");
 const formTotal = document.getElementById("formTotal");
 const formError = document.getElementById("formError");
 const toast = document.getElementById("toast");
-let orders = loadOrders();
+
+let orders = [];
 let editingOrderId = null;
 let toastTimer = null;
-// Load saved orders from the browser.
-function loadOrders() {
+let refreshTimer = null;
+let isLoadingOrders = false;
+
+// Convert Supabase data into the format used by the dashboard.
+function fromDatabase(row) {
+    return {
+        id: String(row.id),
+        table: row.table_number,
+        note: row.note || "",
+        status: row.status || "Pending",
+        items: Array.isArray(row.item) ? row.item : [],
+        createdAt: Number(row.created_at) || 0,
+        updatedAt: Number(row.updated_at) || 0
+    };
+}
+
+// Load orders from Supabase.
+async function loadOrdersFromSupabase() {
+    if (isLoadingOrders) return;
+
+    isLoadingOrders = true;
+
     try {
-        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-        return Array.isArray(saved) ? saved : [];
-    } catch {
-        return [];
+        const { data, error } = await window.tableFlowSupabase
+            .from("order")
+            .select("*")
+            .order("created_at", { ascending: false });
+
+        if (error) throw error;
+
+        orders = (data || []).map(fromDatabase);
+        renderOrders();
+
+    } catch (error) {
+        console.error("Load orders error:", error);
+        showToast("Could not load orders: " + error.message);
+
+    } finally {
+        isLoadingOrders = false;
     }
 }
-// Save orders to the browser.
-function saveOrders() {
-    try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
-    } catch {
-        showToast("Could not save data in this browser.");
+
+// Start automatic order refresh.
+function startOrderRefresh() {
+    if (refreshTimer) return;
+
+    loadOrdersFromSupabase();
+
+    refreshTimer = setInterval(() => {
+        loadOrdersFromSupabase();
+    }, 5000);
+}
+
+// Stop automatic refresh.
+function stopOrderRefresh() {
+    if (refreshTimer) {
+        clearInterval(refreshTimer);
+        refreshTimer = null;
     }
 }
+
 // Escape user-entered text before displaying it in HTML.
 function escapeHTML(value) {
     return String(value).replace(/[&<>"']/g, char => ({
@@ -37,6 +81,7 @@ function escapeHTML(value) {
         "'": "&#39;"
     })[char]);
 }
+
 // Format prices in Thai baht.
 function money(amount) {
     return new Intl.NumberFormat("en-TH", {
@@ -45,56 +90,75 @@ function money(amount) {
         minimumFractionDigits: 2
     }).format(amount);
 }
+
 // Calculate the total for one order.
 function orderTotal(order) {
-    return order.items.reduce(
-        (sum, item) => sum + item.price * item.quantity,
+    return (order.items || []).reduce(
+        (sum, item) =>
+            sum + Number(item.price) * Number(item.quantity),
         0
     );
 }
+
 function createId() {
-    return `${Date.now().toString(36)}-${Math.random()
-        .toString(36).slice(2, 7)}`;
+    return crypto.randomUUID();
 }
+
 // Display orders and update the dashboard.
 function renderOrders() {
     const query = document.getElementById("searchInput")
         .value.trim().toLowerCase();
+
     const status = document.getElementById("statusFilter").value;
+
     const filtered = orders.filter(order => {
         const matchesStatus =
             status === "all" || order.status === status;
+
         const searchableText = [
             `table ${order.table}`,
             order.table,
             order.note || "",
-            ...order.items.map(item => item.name)
+            ...(order.items || []).map(item => item.name)
         ].join(" ").toLowerCase();
+
         return matchesStatus && searchableText.includes(query);
     }).sort((a, b) => b.createdAt - a.createdAt);
+
     document.getElementById("totalCount").textContent = orders.length;
+
     document.getElementById("pendingCount").textContent =
         orders.filter(order => order.status === "Pending").length;
+
     document.getElementById("preparingCount").textContent =
         orders.filter(order => order.status === "Preparing").length;
+
     document.getElementById("completedCount").textContent =
         orders.filter(order => order.status === "Completed").length;
+
     document.getElementById("resultsText").textContent =
         `Showing ${filtered.length} of ${orders.length} orders`;
+
     if (filtered.length === 0) {
         ordersTableBody.innerHTML = "";
         emptyState.style.display = "block";
+
         emptyState.querySelector("h3").textContent =
             orders.length === 0 ? "No orders yet" : "No matching orders";
+
         emptyState.querySelector("p").textContent =
             orders.length === 0
                 ? "Add your first table order to get started."
                 : "Try another search term or status filter.";
+
         document.getElementById("emptyAddBtn").style.display =
             orders.length === 0 ? "inline-block" : "none";
+
         return;
     }
+
     emptyState.style.display = "none";
+
     ordersTableBody.innerHTML = filtered.map(order => {
         const itemsMarkup = order.items.map(item => `
             <div class="food-line">
@@ -102,6 +166,7 @@ function renderOrders() {
                 <span class="qty">× ${item.quantity}</span>
             </div>
         `).join("");
+
         return `
             <tr>
                 <td>
@@ -182,6 +247,7 @@ function renderOrders() {
         `;
     }).join("");
 }
+
 // Add a food row to the form.
 function addItemRow(item = {
     name: "",
@@ -205,7 +271,6 @@ function addItemRow(item = {
         </option>
     `).join("");
 
-    // Keep old custom items available when editing old orders.
     const customOption = item.name && !selectedFood
         ? `<option value="${escapeHTML(item.name)}"
              data-price="${Number(item.price) || 0}" selected>
@@ -238,10 +303,7 @@ function addItemRow(item = {
             aria-label="Food price"
         >
 
-        <button
-            class="remove-item"
-            type="button"
-        >×</button>
+        <button class="remove-item" type="button">×</button>
     `;
 
     const foodSelect = row.querySelector(".item-name");
@@ -249,9 +311,7 @@ function addItemRow(item = {
 
     foodSelect.addEventListener("change", () => {
         const option = foodSelect.selectedOptions[0];
-
         priceInput.value = option.dataset.price || 0;
-
         updateFormTotal();
     });
 
@@ -273,6 +333,7 @@ function addItemRow(item = {
     itemsContainer.appendChild(row);
     updateFormTotal();
 }
+
 // Read food items from the form.
 function readItems() {
     return [...itemsContainer.querySelectorAll(".item-row")]
@@ -289,6 +350,7 @@ function readItems() {
             };
         });
 }
+
 // Calculate the total while entering food items.
 function updateFormTotal() {
     const total = readItems().reduce((sum, item) => {
@@ -299,67 +361,88 @@ function updateFormTotal() {
             return sum +
                 Math.max(0, item.quantity) * Math.max(0, item.price);
         }
+
         return sum;
     }, 0);
+
     formTotal.textContent = money(total);
 }
+
 // Open the form for creating or editing an order.
 function openModal(order = null) {
     editingOrderId = order ? order.id : null;
+
     orderForm.reset();
     itemsContainer.innerHTML = "";
     formError.textContent = "";
+
     document.getElementById("modalTitle").textContent =
         order ? "Edit Order" : "Create New Order";
+
     document.getElementById("saveOrderBtn").textContent =
         order ? "Save Changes" : "Save Order";
+
     document.getElementById("tableNumber").value =
         order ? order.table : "";
+
     document.getElementById("orderNote").value =
         order ? order.note || "" : "";
+
     document.getElementById("orderStatus").value =
         order ? order.status : "Pending";
+
     if (order && order.items.length) {
         order.items.forEach(item => addItemRow(item));
     } else {
         addItemRow();
     }
+
     orderModal.classList.remove("hidden");
     document.body.style.overflow = "hidden";
+
     setTimeout(() => {
         document.getElementById("tableNumber").focus();
     }, 50);
 }
+
 // Close the form.
 function closeModal() {
     orderModal.classList.add("hidden");
     document.body.style.overflow = "";
     editingOrderId = null;
 }
+
 // Show a small notification.
 function showToast(message) {
     toast.textContent = message;
     toast.classList.add("show");
+
     clearTimeout(toastTimer);
+
     toastTimer = setTimeout(() => {
         toast.classList.remove("show");
     }, 2600);
 }
-// Validate and save the order.
-function saveOrder(event) {
+
+// Validate and save the order to Supabase.
+async function saveOrder(event) {
     event.preventDefault();
     formError.textContent = "";
+
     const table = Number(
         document.getElementById("tableNumber").value
     );
+
     const note = document.getElementById("orderNote").value.trim();
     const status = document.getElementById("orderStatus").value;
     const items = readItems();
+
     if (!Number.isInteger(table) || table < 1 || table > 999) {
         formError.textContent =
             "Enter a valid table number from 1 to 999.";
         return;
     }
+
     const invalidItems = items.length === 0 || items.some(item =>
         !item.name ||
         !Number.isInteger(item.quantity) ||
@@ -368,137 +451,204 @@ function saveOrder(event) {
         item.price < 0 ||
         item.price > 999999
     );
+
     if (invalidItems) {
         formError.textContent =
             "Enter a food name, a quantity of 1 or more, and a valid price for every item.";
         return;
     }
-    const now = Date.now();
-    if (editingOrderId) {
-        const index = orders.findIndex(
-            order => order.id === editingOrderId
-        );
-        if (index === -1) {
-            showToast("This order could not be found.");
-            closeModal();
-            return;
+
+    try {
+        let result;
+
+        if (editingOrderId) {
+            result = await window.tableFlowSupabase
+                .from("order")
+                .update({
+                    table_number: table,
+                    note,
+                    status,
+                    item: items
+                })
+                .eq("id", editingOrderId);
+
+        } else {
+            result = await window.tableFlowSupabase
+                .from("order")
+                .insert({
+                    id: createId(),
+                    table_number: table,
+                    note,
+                    status,
+                    item: items,
+                    created_at: Date.now()
+                });
         }
-        orders[index] = {
-            ...orders[index],
-            table,
-            note,
-            status,
-            items,
-            updatedAt: now
-        };
-        showToast("Order updated successfully.");
-    } else {
-        orders.push({
-            id: createId(),
-            table,
-            note,
-            status,
-            items,
-            createdAt: now,
-            updatedAt: now
-        });
-        showToast("New order saved successfully.");
+
+        if (result.error) throw result.error;
+
+        await loadOrdersFromSupabase();
+
+        showToast(
+            editingOrderId
+                ? "Order updated successfully."
+                : "New order saved successfully."
+        );
+
+        closeModal();
+
+    } catch (error) {
+        console.error("Save order error:", error);
+        formError.textContent = "Could not save order: " + error.message;
     }
-    saveOrders();
-    renderOrders();
-    closeModal();
 }
+
 // Handle edit, delete, and quick status actions.
-function handleTableAction(event) {
+async function handleTableAction(event) {
     const statusSelect = event.target.closest(
         '[data-action="status"]'
     );
+
     if (statusSelect && event.type === "change") {
         const order = orders.find(
             item => item.id === statusSelect.dataset.id
         );
+
         if (!order) return;
-        order.status = statusSelect.value;
-        order.updatedAt = Date.now();
-        saveOrders();
-        renderOrders();
+
+        const newStatus = statusSelect.value;
+
+        const { error } = await window.tableFlowSupabase
+            .from("order")
+            .update({ status: newStatus })
+            .eq("id", order.id);
+
+        if (error) {
+            showToast("Could not update status: " + error.message);
+            await loadOrdersFromSupabase();
+            return;
+        }
+
+        await loadOrdersFromSupabase();
+
         showToast(
-            `Table ${order.table} status changed to ${order.status}.`
+            `Table ${order.table} status changed to ${newStatus}.`
         );
+
         return;
     }
+
     const button = event.target.closest("button[data-action]");
     if (!button) return;
+
     const order = orders.find(
         item => item.id === button.dataset.id
     );
+
     if (!order) return;
+
     if (button.dataset.action === "edit") {
         openModal(order);
+        return;
     }
+
     if (button.dataset.action === "next") {
+        let newStatus;
+
         if (order.status === "Pending") {
-            order.status = "Preparing";
+            newStatus = "Preparing";
         } else if (order.status === "Preparing") {
-            order.status = "Completed";
+            newStatus = "Completed";
         } else {
-            order.status = "Pending";
+            newStatus = "Pending";
         }
-        order.updatedAt = Date.now();
-        saveOrders();
-        renderOrders();
-        showToast(
-            `Table ${order.table} is now ${order.status}.`
-        );
+
+        const { error } = await window.tableFlowSupabase
+            .from("order")
+            .update({ status: newStatus })
+            .eq("id", order.id);
+
+        if (error) {
+            showToast("Could not update status: " + error.message);
+            await loadOrdersFromSupabase();
+            return;
+        }
+
+        await loadOrdersFromSupabase();
+
+        showToast(`Table ${order.table} is now ${newStatus}.`);
+        return;
     }
+
     if (button.dataset.action === "delete") {
         const confirmed = window.confirm(
             `Delete the entire order for Table ${order.table}?`
         );
+
         if (!confirmed) return;
-        orders = orders.filter(item => item.id !== order.id);
-        saveOrders();
-        renderOrders();
+
+        const { error } = await window.tableFlowSupabase
+            .from("order")
+            .delete()
+            .eq("id", order.id);
+
+        if (error) {
+            showToast("Could not delete order: " + error.message);
+            return;
+        }
+
+        await loadOrdersFromSupabase();
         showToast("Order deleted.");
     }
 }
+
 // Connect buttons and form events.
 document.getElementById("addOrderBtn").addEventListener(
     "click",
     () => openModal()
 );
+
 document.getElementById("emptyAddBtn").addEventListener(
     "click",
     () => openModal()
 );
+
 document.getElementById("closeModalBtn").addEventListener(
     "click",
     closeModal
 );
+
 document.getElementById("cancelBtn").addEventListener(
     "click",
     closeModal
 );
+
 document.getElementById("addItemBtn").addEventListener(
     "click",
     () => addItemRow()
 );
+
 orderForm.addEventListener("submit", saveOrder);
+
 ordersTableBody.addEventListener("click", handleTableAction);
 ordersTableBody.addEventListener("change", handleTableAction);
+
 document.getElementById("searchInput").addEventListener(
     "input",
     renderOrders
 );
+
 document.getElementById("statusFilter").addEventListener(
     "change",
     renderOrders
 );
+
 orderModal.addEventListener("click", event => {
     if (event.target === orderModal) {
         closeModal();
     }
 });
+
 document.addEventListener("keydown", event => {
     if (
         event.key === "Escape" &&
@@ -507,13 +657,7 @@ document.addEventListener("keydown", event => {
         closeModal();
     }
 });
-// Show saved orders when the page opens.
 
-renderOrders();
-window.addEventListener("pageshow", () => {
-    orders = loadOrders();
-    renderOrders();
-});
 // STAFF LOGIN
 const staffLogin = document.getElementById("staffLogin");
 const staffLoginForm = document.getElementById("staffLoginForm");
@@ -521,19 +665,33 @@ const staffLoginError = document.getElementById("loginError");
 const appDashboard = document.querySelector(".app");
 
 async function checkStaffLogin() {
-    const { data: { session } } =
-        await window.tableFlowSupabase.auth.getSession();
+    try {
+        const { data: { session }, error } =
+            await window.tableFlowSupabase.auth.getSession();
 
-    if (session) {
-        staffLogin.style.display = "none";
-        appDashboard.style.display = "flex";
-    } else {
-        staffLogin.style.display = "block";
-        appDashboard.style.display = "none";
+        if (error) throw error;
+
+        if (session) {
+            staffLogin.style.display = "none";
+            appDashboard.style.display = "flex";
+
+            startOrderRefresh();
+
+        } else {
+            stopOrderRefresh();
+
+            orders = [];
+            staffLogin.style.display = "block";
+            appDashboard.style.display = "none";
+        }
+
+    } catch (error) {
+        console.error("Login check error:", error);
+        staffLoginError.textContent = error.message;
     }
 }
 
-staffLoginForm.addEventListener("submit", async (event) => {
+staffLoginForm.addEventListener("submit", async event => {
     event.preventDefault();
 
     const email = document.getElementById("staffEmail").value;
@@ -554,4 +712,5 @@ staffLoginForm.addEventListener("submit", async (event) => {
     await checkStaffLogin();
 });
 
+// Check login when the page opens.
 checkStaffLogin();
