@@ -209,7 +209,20 @@
         </div>
     </div>
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
-    <script src="menu-data.js"></script>
-    <script src="script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+    const SUPABASE_URL = "https://izluxvseokeikbsnwhfa.supabase.co";
+
+    const SUPABASE_KEY = "sb_publishable_uTNryTvTaPAXT20aJlj76Q_URvYS3Jz";
+
+    window.tableFlowSupabase = supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+</script>
+
+<script src="menu-data.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
