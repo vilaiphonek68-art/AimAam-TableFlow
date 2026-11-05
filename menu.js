@@ -8,11 +8,9 @@ const foodGrid = document.getElementById("foodGrid");
 const categories = document.getElementById("categories");
 const cartItems = document.getElementById("cartItems");
 const cartTotal = document.getElementById("cartTotal");
-
 const customerOrders = document.getElementById("customerOrders");
 const trackingMessage = document.getElementById("trackingMessage");
 
-// Escape text before displaying database content
 function escapeHTML(value) {
     return String(value ?? "").replace(/[&<>"']/g, char => ({
         "&": "&amp;",
@@ -23,7 +21,28 @@ function escapeHTML(value) {
     })[char]);
 }
 
-// Create or restore customer login session
+// Display food image
+function renderFoodImage(food) {
+    const image = String(food.image || "");
+
+    if (image.startsWith("https://") || image.startsWith("http://")) {
+        return `
+            <img
+                src="${escapeHTML(image)}"
+                alt="${escapeHTML(food.name)}"
+                loading="lazy"
+                onerror="this.style.display='none';this.nextElementSibling.style.display='grid';"
+            >
+            <span class="food-emoji-fallback" style="display:none">
+                🍽️
+            </span>
+        `;
+    }
+
+    return `<span>${escapeHTML(image || "🍽️")}</span>`;
+}
+
+// Customer session
 async function ensureCustomerSession() {
     const client = window.tableFlowSupabase;
 
@@ -31,13 +50,11 @@ async function ensureCustomerSession() {
         await client.auth.getSession();
 
     if (sessionError) throw sessionError;
-
     if (session) return session.user;
 
     const { data, error } = await client.auth.signInAnonymously();
 
     if (error) throw error;
-
     if (!data.user) {
         throw new Error("Customer session could not be created.");
     }
@@ -45,7 +62,7 @@ async function ensureCustomerSession() {
     return data.user;
 }
 
-// Display food categories
+// Categories
 function renderCategories() {
     const allCategories = [
         "All",
@@ -63,7 +80,7 @@ function renderCategories() {
     `).join("");
 }
 
-// Display food menu
+// Food menu
 function renderMenu() {
     const filtered = currentCategory === "All"
         ? FOOD_MENU
@@ -71,7 +88,9 @@ function renderMenu() {
 
     foodGrid.innerHTML = filtered.map(food => `
         <article class="food-card">
-            <div class="food-photo">${escapeHTML(food.image)}</div>
+            <div class="food-photo">
+                ${renderFoodImage(food)}
+            </div>
 
             <div class="food-details">
                 <h3>${escapeHTML(food.name)}</h3>
@@ -80,10 +99,7 @@ function renderMenu() {
                 <div class="food-action">
                     <strong>฿${Number(food.price)}</strong>
 
-                    <button
-                        type="button"
-                        data-add="${food.id}"
-                    >
+                    <button type="button" data-add="${food.id}">
                         + Add
                     </button>
                 </div>
@@ -92,10 +108,9 @@ function renderMenu() {
     `).join("");
 }
 
-// Add food to cart
+// Add food
 function addToCart(id) {
     const food = FOOD_MENU.find(item => item.id === id);
-
     if (!food) return;
 
     const existing = cart.find(item => item.id === id);
@@ -103,19 +118,15 @@ function addToCart(id) {
     if (existing) {
         existing.quantity++;
     } else {
-        cart.push({
-            ...food,
-            quantity: 1
-        });
+        cart.push({ ...food, quantity: 1 });
     }
 
     renderCart();
 }
 
-// Remove one item
+// Remove food
 function removeFromCart(id) {
     const item = cart.find(food => food.id === id);
-
     if (!item) return;
 
     item.quantity--;
@@ -127,7 +138,7 @@ function removeFromCart(id) {
     renderCart();
 }
 
-// Calculate total
+// Total
 function getTotal() {
     return cart.reduce(
         (sum, item) => sum + item.price * item.quantity,
@@ -135,7 +146,7 @@ function getTotal() {
     );
 }
 
-// Display cart
+// Cart
 function renderCart() {
     if (cart.length === 0) {
         cartItems.textContent = "Your cart is empty.";
@@ -143,17 +154,11 @@ function renderCart() {
         cartItems.innerHTML = cart.map(item => `
             <div class="cart-row">
                 <span>
-                    ${escapeHTML(item.image)}
                     ${escapeHTML(item.name)} × ${item.quantity}
                 </span>
-
                 <span>
                     ฿${item.price * item.quantity}
-
-                    <button
-                        type="button"
-                        data-remove="${item.id}"
-                    >−</button>
+                    <button type="button" data-remove="${item.id}">−</button>
                 </span>
             </div>
         `).join("");
@@ -163,7 +168,7 @@ function renderCart() {
         "Total: ฿" + getTotal().toFixed(2);
 }
 
-// Display customer's own orders
+// Customer orders
 function renderCustomerOrders(orders) {
     if (!orders || orders.length === 0) {
         trackingMessage.textContent =
@@ -182,7 +187,6 @@ function renderCustomerOrders(orders) {
             : "Pending";
 
         const currentIndex = statuses.indexOf(currentStatus);
-
         const items = Array.isArray(order.item) ? order.item : [];
 
         const itemHTML = items.map(item => `
@@ -203,15 +207,11 @@ function renderCustomerOrders(orders) {
                 <strong>
                     Order #${escapeHTML(String(order.id).slice(-5).toUpperCase())}
                 </strong>
-
                 <p>Table ${escapeHTML(order.table_number)}</p>
-
                 <div>${itemHTML}</div>
-
                 <p class="tracking-status">
                     Status: ${escapeHTML(currentStatus)}
                 </p>
-
                 <div class="tracking-progress">
                     ${progressHTML}
                 </div>
@@ -220,7 +220,7 @@ function renderCustomerOrders(orders) {
     }).join("");
 }
 
-// Load only this customer's orders
+// Load own orders
 async function loadMyOrders() {
     if (!customerId) return;
 
@@ -240,27 +240,22 @@ async function loadMyOrders() {
     renderCustomerOrders(data);
 }
 
-// Initialize customer session and tracking
+// Initialize customer
 async function initializeCustomer() {
     try {
         const user = await ensureCustomerSession();
-
         customerId = user.id;
 
         await loadMyOrders();
 
-        if (trackingTimer) {
-            clearInterval(trackingTimer);
-        }
-
+        if (trackingTimer) clearInterval(trackingTimer);
         trackingTimer = setInterval(loadMyOrders, 5000);
 
-} catch (error) {
-    console.error("Customer login error:", error);
-
-    trackingMessage.textContent =
-        "Unable to connect: " + (error.message || String(error));
-}
+    } catch (error) {
+        console.error("Customer login error:", error);
+        trackingMessage.textContent =
+            "Unable to connect: " + (error.message || String(error));
+    }
 }
 
 // Confirm order
@@ -324,7 +319,7 @@ async function confirmOrder() {
 
     } catch (error) {
         console.error("Order error:", error);
-        alert("Connection error." + error.message);
+        alert("Connection error: " + error.message);
     } finally {
         isSubmitting = false;
     }
@@ -340,22 +335,20 @@ categories.addEventListener("click", event => {
     renderMenu();
 });
 
-// Add food button
+// Add button
 foodGrid.addEventListener("click", event => {
     const button = event.target.closest("[data-add]");
     if (!button) return;
 
-    const foodId = Number(button.dataset.add);
-    addToCart(foodId);
+    addToCart(Number(button.dataset.add));
 });
 
-// Remove food button
+// Remove button
 cartItems.addEventListener("click", event => {
     const button = event.target.closest("[data-remove]");
     if (!button) return;
 
-    const foodId = Number(button.dataset.remove);
-    removeFromCart(foodId);
+    removeFromCart(Number(button.dataset.remove));
 });
 
 // Confirm button
