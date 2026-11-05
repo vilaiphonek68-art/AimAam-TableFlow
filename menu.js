@@ -255,12 +255,12 @@ async function initializeCustomer() {
 
         trackingTimer = setInterval(loadMyOrders, 5000);
 
-    } catch (error) {
-        console.error("Customer login error:", error);
+} catch (error) {
+    console.error("Customer login error:", error);
 
-        trackingMessage.textContent =
-            "Unable to connect. Please refresh the page.";
-    }
+    trackingMessage.textContent =
+        "Unable to connect: " + (error.message || String(error));
+}
 }
 
 // Confirm order
