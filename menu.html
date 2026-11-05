@@ -246,10 +246,18 @@
     const SUPABASE_URL = "https://izluxvseokeikbsnwhfa.supabase.co";
     const SUPABASE_KEY = "sb_publishable_uTNryTvTaPAXT20aJlj76Q_URvYS3Jz";
 
-    window.tableFlowSupabase = supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
+  window.tableFlowSupabase = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY,
+    {
+        auth: {
+            storageKey: "tableflow-customer-auth",
+            autoRefreshToken: true,
+            persistSession: true,
+            detectSessionInUrl: false
+        }
+    }
+);
 </script>
 
 <!-- Existing JavaScript -->
