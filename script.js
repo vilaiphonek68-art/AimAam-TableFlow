@@ -514,3 +514,44 @@ window.addEventListener("pageshow", () => {
     orders = loadOrders();
     renderOrders();
 });
+// STAFF LOGIN
+const staffLogin = document.getElementById("staffLogin");
+const staffLoginForm = document.getElementById("staffLoginForm");
+const staffLoginError = document.getElementById("loginError");
+const appDashboard = document.querySelector(".app");
+
+async function checkStaffLogin() {
+    const { data: { session } } =
+        await window.tableFlowSupabase.auth.getSession();
+
+    if (session) {
+        staffLogin.style.display = "none";
+        appDashboard.style.display = "flex";
+    } else {
+        staffLogin.style.display = "block";
+        appDashboard.style.display = "none";
+    }
+}
+
+staffLoginForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const email = document.getElementById("staffEmail").value;
+    const password = document.getElementById("staffPassword").value;
+
+    const { error } =
+        await window.tableFlowSupabase.auth.signInWithPassword({
+            email,
+            password
+        });
+
+    if (error) {
+        staffLoginError.textContent = error.message;
+        return;
+    }
+
+    staffLoginError.textContent = "";
+    await checkStaffLogin();
+});
+
+checkStaffLogin();
