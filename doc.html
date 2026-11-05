@@ -6,6 +6,18 @@
     <title>Aim Aam - Staff Dashboard</title>
 
     <style>
+        #staffLogin[hidden],
+.app[hidden] {
+    display: none !important;
+}
+
+#staffLogin:not([hidden]) {
+    display: block !important;
+}
+
+.app:not([hidden]) {
+    display: flex !important;
+}
         :root {
             --green: #153D32;
             --green-light: #245747;
@@ -691,7 +703,7 @@
         </form>
     </div>
 
-    <div class="app">
+    <div class="app"hidden>
 
         <aside class="sidebar">
             <div class="brand">
