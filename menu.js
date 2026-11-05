@@ -126,7 +126,7 @@ function renderCart() {
 }
 
 // Confirm order
-function confirmOrder() {
+async function confirmOrder() {
     const table = Number(
         document.getElementById("tableNumber").value
     );
@@ -141,61 +141,52 @@ function confirmOrder() {
         return;
     }
 
-    let savedOrders;
-
-    try {
-        savedOrders = JSON.parse(
-            localStorage.getItem("restaurantOrders") || "[]"
-        );
-
-        if (!Array.isArray(savedOrders)) {
-            savedOrders = [];
-        }
-    } catch {
-        savedOrders = [];
-    }
-
     const now = Date.now();
 
     const newOrder = {
         id: `${now}-${Math.random().toString(36).slice(2, 7)}`,
-        table: table,
+        table_number: table,
         note: "Customer online order",
         status: "Pending",
-
         items: cart.map(item => ({
             name: item.name,
             quantity: item.quantity,
             price: item.price
         })),
-
-        createdAt: now,
-        updatedAt: now
+        created_at: now,
+        updated_at: now
     };
 
-    savedOrders.push(newOrder);
+    try {
+        const { error } = await window.tableFlowSupabase
+            .from("orders")
+            .insert([newOrder]);
 
-    localStorage.setItem(
-        "restaurantOrders",
-        JSON.stringify(savedOrders)
-    );
+        if (error) {
+            console.error("Supabase error:", error);
+            alert("Order failed. Please try again.");
+            return;
+        }
 
-    alert("Order submitted successfully!");
+        alert("Order submitted successfully!");
 
-    cart = [];
-    renderCart();
+        cart = [];
+        renderCart();
 
-    document.getElementById("tableNumber").value = "";
+        document.getElementById("tableNumber").value = "";
+
+    } catch (error) {
+        console.error(error);
+        alert("Connection error. Please try again.");
+    }
 }
 
 // Category selection
 categories.addEventListener("click", event => {
     const button = event.target.closest("[data-category]");
-
     if (!button) return;
 
     currentCategory = button.dataset.category;
-
     renderCategories();
     renderMenu();
 });
@@ -203,22 +194,18 @@ categories.addEventListener("click", event => {
 // Add food button
 foodGrid.addEventListener("click", event => {
     const button = event.target.closest("[data-add]");
-
     if (!button) return;
 
     const foodId = Number(button.dataset.add);
-
     addToCart(foodId);
 });
 
 // Remove food button
 cartItems.addEventListener("click", event => {
     const button = event.target.closest("[data-remove]");
-
     if (!button) return;
 
     const foodId = Number(button.dataset.remove);
-
     removeFromCart(foodId);
 });
 
