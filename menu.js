@@ -148,7 +148,7 @@ async function confirmOrder() {
         table_number: table,
         note: "Customer online order",
         status: "Pending",
-        items: cart.map(item => ({
+        item: cart.map(item => ({
             name: item.name,
             quantity: item.quantity,
             price: item.price
