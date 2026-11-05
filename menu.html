@@ -7,479 +7,519 @@
     <link rel="stylesheet" href="style.css">
 
     <style>
-      /* ===== TABLEFLOW - DRIBBBLE FOOD THEME ===== */
+        * {
+            box-sizing: border-box;
+        }
 
-.customer-menu {
-    width: min(100% - 40px, 1050px);
-    margin: 35px auto;
-    padding: 30px;
-    box-sizing: border-box;
-    background: #F7F5EA;
-    border-radius: 28px;
-    color: #20251F;
-    font-family: Arial, sans-serif;
-}
+        body {
+            margin: 0;
+            background: #eeefe7;
+            font-family: Arial, sans-serif;
+            color: #20251F;
+        }
 
-/* Header */
-.customer-menu .menu-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 20px;
-    margin-bottom: 35px;
-}
+        .customer-menu {
+            width: min(100% - 36px, 1100px);
+            margin: 30px auto;
+            padding: 30px;
+            background: #F7F5EA;
+            border-radius: 28px;
+        }
 
-.customer-menu .menu-top p {
-    color: #647168;
-    margin: 5px 0;
-}
+        /* HEADER */
+        .menu-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
 
-.customer-menu .menu-top h1 {
-    color: #153D32;
-    font-size: clamp(28px, 4vw, 42px);
-    font-weight: 900;
-    margin: 8px 0;
-    letter-spacing: -1.5px;
-}
+        .brand-name {
+            font-size: 25px;
+            font-weight: 900;
+            color: #153D32;
+            letter-spacing: -1px;
+        }
 
-.customer-menu .menu-top a {
-    color: #153D32;
-    text-decoration: none;
-    font-weight: bold;
-    background: #B7F34A;
-    padding: 12px 18px;
-    border-radius: 30px;
-    white-space: nowrap;
-    transition: 0.2s;
-}
+        .brand-name span {
+            color: #8bbd27;
+        }
 
-.customer-menu .menu-top a:hover {
-    background: #E7F56A;
-    transform: translateY(-3px);
-}
+        .menu-top p {
+            margin: 5px 0;
+            color: #788078;
+            font-size: 13px;
+        }
 
-/* Section headings */
-.customer-menu h2 {
-    color: #153D32;
-    font-size: 23px;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-    margin: 28px 0 15px;
-}
+        .menu-top a {
+            text-decoration: none;
+            color: #153D32;
+            background: #B7F34A;
+            padding: 12px 18px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 13px;
+        }
 
-.customer-menu label {
-    display: block;
-    font-weight: bold;
-    color: #153D32;
-    margin-bottom: 8px;
-}
+        /* HERO */
+        .menu-hero {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            gap: 30px;
+            background: #153D32;
+            color: white;
+            padding: 38px;
+            border-radius: 25px;
+            margin-bottom: 35px;
+            overflow: hidden;
+        }
 
-/* Table input */
-.customer-menu input {
-    width: 100%;
-    padding: 14px 16px;
-    border: 1px solid #dce2d3;
-    border-radius: 13px;
-    margin: 8px 0 20px;
-    box-sizing: border-box;
-    background: white;
-    font-size: 15px;
-    outline: none;
-}
+        .hero-label {
+            display: inline-block;
+            color: #153D32;
+            background: #B7F34A;
+            padding: 9px 13px;
+            border-radius: 30px;
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: 1px;
+        }
 
-.customer-menu input:focus {
-    border-color: #153D32;
-    box-shadow: 0 0 0 3px rgba(183, 243, 74, 0.35);
-}
+        .hero-content h2 {
+            color: white;
+            font-size: clamp(38px, 5vw, 58px);
+            line-height: 1.05;
+            letter-spacing: -2px;
+            margin: 22px 0 15px;
+        }
 
-/* Categories */
-.customer-menu .category-buttons {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin: 18px 0 28px;
-}
+        .hero-content h2 span {
+            color: #B7F34A;
+        }
 
-.customer-menu .category-buttons button {
-    padding: 10px 19px;
-    border: 1px solid #dce2d3;
-    background: white;
-    color: #153D32;
-    border-radius: 30px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.2s;
-}
+        .hero-content p {
+            color: #d5e1d7;
+            font-size: 14px;
+            line-height: 1.8;
+            max-width: 300px;
+        }
 
-.customer-menu .category-buttons button:hover {
-    background: #E7F56A;
-    border-color: #E7F56A;
-}
+        .hero-button {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 14px 22px;
+            background: #B7F34A;
+            color: #153D32;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 900;
+            transition: 0.2s;
+        }
 
-.customer-menu .category-buttons button.active {
-    background: #153D32;
-    color: white;
-    border-color: #153D32;
-}
+        .hero-button:hover {
+            background: #E7F56A;
+            transform: translateY(-3px);
+        }
 
-/* Food cards */
-.customer-menu .food-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 18px;
-    margin-top: 20px;
-}
+        .hero-image {
+            position: relative;
+            min-width: 0;
+        }
 
-.customer-menu .food-card {
-    background: white;
-    border: 1px solid #e9ecdf;
-    border-radius: 20px;
-    overflow: hidden;
-    transition: transform 0.25s, box-shadow 0.25s;
-}
+        .hero-image img {
+            width: 100%;
+            height: 260px;
+            object-fit: cover;
+            display: block;
+            border-radius: 22px;
+        }
 
-.customer-menu .food-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 14px 30px rgba(21, 61, 50, 0.12);
-}
+        .hero-sticker {
+            position: absolute;
+            right: -10px;
+            bottom: -12px;
+            background: #E7F56A;
+            color: #153D32;
+            padding: 12px 16px;
+            border-radius: 30px;
+            font-size: 10px;
+            font-weight: 900;
+            transform: rotate(-5deg);
+        }
 
-.customer-menu .food-photo {
-    height: 175px;
-    background: #E7F56A;
-    display: grid;
-    place-items: center;
-    font-size: 65px;
-    overflow: hidden;
-}
+        /* TABLE NUMBER */
+        .table-section {
+            margin-bottom: 30px;
+        }
 
-.customer-menu .food-photo img {
-    width: 100% !important;
-    height: 175px !important;
-    min-height: 175px !important;
-    object-fit: cover !important;
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-}
-.customer-menu .food-details {
-    padding: 17px;
-}
+        .table-section label {
+            display: block;
+            color: #153D32;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 9px;
+        }
 
-.customer-menu .food-details h3 {
-    color: #153D32;
-    font-size: 17px;
-    margin: 0 0 8px;
-}
+        .customer-menu input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #dce2d3;
+            border-radius: 12px;
+            background: white;
+            font-size: 15px;
+            outline: none;
+        }
 
-.customer-menu .food-details p {
-    color: #7b8278;
-    font-size: 13px;
-    line-height: 1.5;
-}
+        .customer-menu input:focus {
+            border-color: #153D32;
+            box-shadow: 0 0 0 3px rgba(183,243,74,0.3);
+        }
 
-.customer-menu .food-action {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
-    margin-top: 16px;
-}
+        /* HEADINGS */
+        .section-heading {
+            color: #153D32;
+            font-size: 25px;
+            font-weight: 900;
+            letter-spacing: -0.8px;
+            margin: 30px 0 16px;
+        }
 
-.customer-menu .food-action strong {
-    color: #153D32;
-    font-size: 17px;
-}
+        .section-subtitle {
+            color: #858b80;
+            font-size: 13px;
+            margin-top: -8px;
+            margin-bottom: 20px;
+        }
 
-.customer-menu .food-action button,
-.customer-menu .confirm-btn {
-    background: #153D32;
-    color: white;
-    border: 0;
-    border-radius: 12px;
-    padding: 11px 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.2s;
-}
+        /* CATEGORIES */
+        .category-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 18px 0 28px;
+        }
 
-.customer-menu .food-action button:hover,
-.customer-menu .confirm-btn:hover {
-    background: #315C43;
-    transform: translateY(-2px);
-}
+        .category-buttons button {
+            padding: 11px 19px;
+            border: 1px solid #dce2d3;
+            background: white;
+            color: #153D32;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
 
-/* Cart */
-.customer-menu .cart-box,
-.customer-menu .order-tracking {
-    background: white;
-    border: 1px solid #e9ecdf;
-    border-radius: 22px;
-    padding: 24px;
-    margin-top: 30px;
-}
+        .category-buttons button:hover {
+            background: #E7F56A;
+        }
 
-.customer-menu .cart-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 0;
-    border-bottom: 1px solid #edf0e8;
-}
+        .category-buttons button.active {
+            background: #153D32;
+            color: white;
+            border-color: #153D32;
+        }
 
-.customer-menu .cart-row button {
-    border: 0;
-    border-radius: 8px;
-    padding: 7px 11px;
-    background: #E7F56A;
-    color: #153D32;
-    cursor: pointer;
-}
+        /* FOOD GRID */
+        .food-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
 
-.customer-menu #cartTotal {
-    color: #153D32;
-    margin-top: 20px;
-}
+        .food-card {
+            background: white;
+            border: 1px solid #e9ecdf;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: 0.25s;
+        }
 
-.customer-menu .confirm-btn {
-    width: 100%;
-    padding: 15px;
-    margin-top: 15px;
-    background: #B7F34A;
-    color: #153D32;
-    font-size: 16px;
-}
+        .food-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 14px 30px rgba(21,61,50,0.12);
+        }
 
-.customer-menu .confirm-btn:hover {
-    background: #E7F56A;
-}
+        .food-photo {
+            height: 185px;
+            background: #E7F56A;
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+            font-size: 60px;
+        }
 
-/* Order tracking */
-.customer-menu .tracking-order {
-    border: 1px solid #e9ecdf;
-    border-radius: 15px;
-    padding: 16px;
-    margin-top: 14px;
-    background: #F7F5EA;
-}
+        .food-photo img {
+            width: 100% !important;
+            height: 185px !important;
+            object-fit: cover !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
 
-.customer-menu .tracking-status {
-    color: #153D32;
-    font-weight: bold;
-    margin-top: 8px;
-}
+        .food-details {
+            padding: 17px;
+        }
 
-.customer-menu .tracking-progress {
-    display: flex;
-    gap: 8px;
-    margin-top: 12px;
-    font-size: 13px;
-    flex-wrap: wrap;
-}
+        .food-details h3 {
+            color: #153D32;
+            font-size: 17px;
+            margin: 0 0 8px;
+        }
 
-.customer-menu .tracking-step {
-    background: #e8eadf;
-    color: #687267;
-    padding: 8px 12px;
-    border-radius: 20px;
-}
+        .food-details p {
+            color: #858b80;
+            font-size: 13px;
+            line-height: 1.5;
+            min-height: 20px;
+        }
 
-.customer-menu .tracking-step.active {
-    background: #B7F34A;
-    color: #153D32;
-    font-weight: bold;
-}
+        .food-action {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+        }
 
-/* Responsive */
-@media (max-width: 760px) {
-    .customer-menu {
-        width: 100%;
-        margin: 0 auto;
-        padding: 22px 16px;
-        border-radius: 0;
-    }
+        .food-action strong {
+            color: #153D32;
+            font-size: 17px;
+        }
 
-    .customer-menu .food-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 12px;
-    }
+        .food-action button {
+            border: 0;
+            background: #153D32;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+        }
 
-    .customer-menu .food-photo {
-        height: 135px;
-    }
+        .food-action button:hover {
+            background: #315C43;
+        }
 
-    .customer-menu .food-details {
-        padding: 12px;
-    }
+        /* CART AND TRACKING */
+        .cart-box,
+        .order-tracking {
+            background: white;
+            border: 1px solid #e9ecdf;
+            border-radius: 22px;
+            padding: 24px;
+            margin-top: 30px;
+        }
 
-    .customer-menu .menu-top {
-        align-items: flex-start;
-    }
-}
+        .cart-box h2,
+        .order-tracking h2 {
+            color: #153D32;
+            font-size: 22px;
+            margin-top: 0;
+        }
 
-@media (max-width: 420px) {
-    .customer-menu .food-grid {
-        grid-template-columns: 1fr;
-    }
-}
+        .cart-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 0;
+            border-bottom: 1px solid #edf0e8;
+        }
+
+        .cart-row button {
+            border: 0;
+            border-radius: 8px;
+            padding: 7px 11px;
+            background: #E7F56A;
+            color: #153D32;
+            cursor: pointer;
+        }
+
+        #cartTotal {
+            color: #153D32;
+            margin-top: 20px;
+        }
+
+        .confirm-btn {
+            width: 100%;
+            padding: 15px;
+            margin-top: 15px;
+            border: 0;
+            border-radius: 12px;
+            background: #B7F34A;
+            color: #153D32;
+            font-size: 16px;
+            font-weight: 900;
+            cursor: pointer;
+        }
+
+        .confirm-btn:hover {
+            background: #E7F56A;
+        }
+
+        .tracking-order {
+            background: #F7F5EA;
+            border: 1px solid #e9ecdf;
+            border-radius: 15px;
+            padding: 16px;
+            margin-top: 14px;
+        }
+
+        .tracking-status {
+            color: #153D32;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        .tracking-progress {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            font-size: 13px;
+            flex-wrap: wrap;
+        }
+
+        .tracking-step {
+            background: #e8eadf;
+            color: #687267;
+            padding: 8px 12px;
+            border-radius: 20px;
+        }
+
+        .tracking-step.active {
+            background: #B7F34A;
+            color: #153D32;
+            font-weight: bold;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 760px) {
+            .customer-menu {
+                width: 100%;
+                margin: 0 auto;
+                padding: 18px;
+                border-radius: 0;
+            }
+
+            .menu-hero {
+                grid-template-columns: 1fr;
+                padding: 25px;
+                gap: 25px;
+            }
+
+            .hero-content h2 {
+                font-size: 43px;
+            }
+
+            .hero-image img {
+                height: 210px;
+            }
+
+            .food-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 12px;
+            }
+
+            .food-photo,
+            .food-photo img {
+                height: 145px !important;
+            }
+
+            .food-details {
+                padding: 12px;
+            }
+
+            .menu-top {
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .food-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .menu-top {
+                flex-wrap: wrap;
+            }
+        }
     </style>
-   /* ===== REFINED HERO DESIGN ===== */
-
-.customer-menu .menu-hero {
-    display: grid;
-    grid-template-columns: 1.1fr 0.9fr;
-    align-items: center;
-    gap: 25px;
-    min-height: 320px;
-    padding: 35px 40px;
-    margin: 20px 0 35px;
-    background: #153D32;
-    border-radius: 28px;
-    overflow: hidden;
-    color: white;
-    box-sizing: border-box;
-}
-
-.customer-menu .hero-content {
-    position: relative;
-    z-index: 2;
-}
-
-.customer-menu .hero-label {
-    font-size: 11px;
-    letter-spacing: 1.5px;
-    font-weight: 900;
-}
-
-.customer-menu .hero-content h2 {
-    font-size: clamp(38px, 4.5vw, 55px);
-    line-height: 1.05;
-    margin: 18px 0;
-    color: white;
-}
-
-.customer-menu .hero-content h2 span {
-    color: #B7F34A;
-}
-
-.customer-menu .hero-content p {
-    font-size: 14px;
-    line-height: 1.7;
-    max-width: 300px;
-    color: #e0eadf;
-}
-
-.customer-menu .hero-button {
-    display: inline-block;
-    margin-top: 12px;
-    padding: 13px 22px;
-    background: #B7F34A;
-    color: #153D32;
-    text-decoration: none;
-    border-radius: 30px;
-    font-weight: 900;
-}
-
-.customer-menu .hero-image {
-    position: relative;
-    width: 100%;
-    min-width: 0;
-}
-
-.customer-menu .hero-image img {
-    width: 100%;
-    height: 245px;
-    object-fit: cover;
-    border-radius: 22px;
-    display: block;
-    transform: rotate(2deg);
-}
-
-.customer-menu .hero-sticker {
-    position: absolute;
-    right: -5px;
-    bottom: -12px;
-    background: #E7F56A;
-    color: #153D32;
-    padding: 11px 15px;
-    border-radius: 30px;
-    font-size: 10px;
-    font-weight: 900;
-}
-
-@media (max-width: 760px) {
-    .customer-menu .menu-hero {
-        grid-template-columns: 1fr;
-        padding: 25px;
-        gap: 20px;
-    }
-
-    .customer-menu .hero-content h2 {
-        font-size: 42px;
-    }
-
-    .customer-menu .hero-image img {
-        height: 190px;
-        transform: none;
-    }
-}
 </head>
 
 <body>
 
 <div class="customer-menu">
-<section class="menu-hero">
-    <div class="hero-content">
-        <span class="hero-label">FRESH FOOD · GOOD MOOD</span>
 
-        <h2>
-            Good food.<br>
-            <span>Good mood.</span>
-        </h2>
-
-        <p>
-            Delicious moments start here.
-            Choose your favorites and enjoy!
-        </p>
-
-        <a href="#foodGrid" class="hero-button">
-            Explore Menu →
-        </a>
-    </div>
-
-    <div class="hero-image">
-        <img
-            src="https://images.unsplash.com/photo-1559314809-0d155014e29e?w=800"
-            alt="Delicious Thai food"
-        >
-        <div class="hero-sticker">MADE WITH LOVE ♡</div>
-    </div>
-</section>
+    <!-- HEADER -->
     <div class="menu-top">
         <div>
-            <p>Aim Aam</p>
-            <h1>Our Food Menu 🍽️</h1>
-            <p>AimAam online service.</p>
+            <div class="brand-name">Aim<span>Aam.</span></div>
+            <p>GOOD FOOD, GOOD MOOD.</p>
         </div>
 
         <a href="doc.html">Staff Dashboard →</a>
     </div>
 
-    <label for="tableNumber">Table Number</label>
-    <input
-        id="tableNumber"
-        type="number"
-        min="1"
-        max="999"
-        placeholder="Enter table number"
-    >
+    <!-- HERO -->
+    <section class="menu-hero">
+        <div class="hero-content">
+            <span class="hero-label">FRESH FOOD · GOOD MOOD</span>
 
-    <h2>what you want</h2>
+            <h2>
+                Good food.<br>
+                <span>Good mood.</span>
+            </h2>
+
+            <p>
+                Delicious moments start here.
+                Choose your favorites and enjoy!
+            </p>
+
+            <a href="#foodGrid" class="hero-button">
+                Explore Menu →
+            </a>
+        </div>
+
+        <div class="hero-image">
+            <img
+                src="https://images.unsplash.com/photo-1559314809-0d155014e29e?w=800"
+                alt="Delicious Thai food"
+            >
+            <div class="hero-sticker">MADE WITH LOVE ♡</div>
+        </div>
+    </section>
+
+    <!-- TABLE NUMBER -->
+    <div class="table-section">
+        <label for="tableNumber">Your Table Number</label>
+        <input
+            id="tableNumber"
+            type="number"
+            min="1"
+            max="999"
+            placeholder="Enter your table number"
+        >
+    </div>
+
+    <!-- MENU CATEGORIES -->
+    <h2 class="section-heading">What are you craving?</h2>
+    <p class="section-subtitle">Find something delicious for today.</p>
+
     <div class="category-buttons" id="categories"></div>
 
-    <h2>Food Menu</h2>
+    <!-- FOOD MENU -->
+    <h2 class="section-heading">Our Food Menu</h2>
+    <p class="section-subtitle">Fresh favorites, made for you.</p>
+
     <div class="food-grid" id="foodGrid"></div>
 
+    <!-- CART -->
     <section class="cart-box">
         <h2>🛒 Your Order</h2>
 
@@ -494,6 +534,7 @@
         </button>
     </section>
 
+    <!-- ORDER TRACKING -->
     <section class="order-tracking">
         <h2>📦 Your Order Status</h2>
 
@@ -506,10 +547,10 @@
 
 </div>
 
-<!-- Supabase Library -->
+<!-- SUPABASE LIBRARY -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- Supabase Connection -->
+<!-- SUPABASE CONNECTION -->
 <script>
     const SUPABASE_URL = "https://izluxvseokeikbsnwhfa.supabase.co";
     const SUPABASE_KEY = "sb_publishable_uTNryTvTaPAXT20aJlj76Q_URvYS3Jz";
@@ -528,7 +569,7 @@
     );
 </script>
 
-<!-- Existing JavaScript -->
+<!-- EXISTING JAVASCRIPT -->
 <script src="menu-data.js"></script>
 <script src="menu.js"></script>
 
