@@ -664,6 +664,22 @@ const staffLoginForm = document.getElementById("staffLoginForm");
 const staffLoginError = document.getElementById("loginError");
 const appDashboard = document.querySelector(".app");
 
+function showStaffLogin() {
+    staffLogin.hidden = false;
+    appDashboard.hidden = true;
+
+    stopOrderRefresh();
+}
+
+function showStaffDashboard() {
+    staffLogin.hidden = true;
+    appDashboard.hidden = false;
+
+    appDashboard.style.display = "flex";
+
+    startOrderRefresh();
+}
+
 async function checkStaffLogin() {
     try {
         const { data: { session }, error } =
@@ -672,29 +688,25 @@ async function checkStaffLogin() {
         if (error) throw error;
 
         if (session) {
-            staffLogin.style.display = "none";
-            appDashboard.style.display = "flex";
-
-            startOrderRefresh();
-
+            showStaffDashboard();
         } else {
-            stopOrderRefresh();
-
             orders = [];
-            staffLogin.style.display = "block";
-            appDashboard.style.display = "none";
+            showStaffLogin();
         }
 
     } catch (error) {
         console.error("Login check error:", error);
         staffLoginError.textContent = error.message;
+        showStaffLogin();
     }
 }
 
 staffLoginForm.addEventListener("submit", async event => {
     event.preventDefault();
 
-    const email = document.getElementById("staffEmail").value;
+    staffLoginError.textContent = "";
+
+    const email = document.getElementById("staffEmail").value.trim();
     const password = document.getElementById("staffPassword").value;
 
     const { error } =
@@ -708,9 +720,7 @@ staffLoginForm.addEventListener("submit", async event => {
         return;
     }
 
-    staffLoginError.textContent = "";
     await checkStaffLogin();
 });
 
-// Check login when the page opens.
 checkStaffLogin();
