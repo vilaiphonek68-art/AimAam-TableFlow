@@ -324,7 +324,7 @@ async function confirmOrder() {
 
     } catch (error) {
         console.error("Order error:", error);
-        alert("Connection error. Please try again.");
+        alert("Connection error." + error.message);
     } finally {
         isSubmitting = false;
     }
