@@ -154,7 +154,6 @@ async function confirmOrder() {
             price: item.price
         })),
         created_at: now,
-        updated_at: now 
     };
 
     try {
