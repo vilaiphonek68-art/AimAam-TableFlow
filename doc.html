@@ -625,6 +625,45 @@
                 width: 100%;
             }
         }
+        /* FORCE SHOW DASHBOARD CONTENT */
+.app {
+    display: flex !important;
+    flex-direction: column !important;
+    width: min(1180px, calc(100% - 32px)) !important;
+}
+
+.main-content {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 100% !important;
+    min-height: 500px !important;
+    padding: 30px !important;
+}
+
+.topbar,
+.stats-grid,
+.orders-panel,
+.page-footer {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.stats-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}
+
+.orders-panel {
+    display: block !important;
+}
+
+@media (max-width: 760px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+}
     </style>
 </head>
 
